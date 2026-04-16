@@ -1,0 +1,29 @@
+{
+  "skill_name": "frontend-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Design a performance management dashboard for a 24-person company. The dashboard needs to show: (1) Header with company stats (total employees, average score, high/medium/low performance counts with icons), (2) A multi-line trend chart showing performance over 5 years by category (Promedio, Alto, Medio, Bajo), (3) Department breakdown cards showing distribution and metrics. Managers and HR use this to see company health. Use professional colors, make it responsive, and generate React + Tailwind code.",
+      "expected_output": "Complete React dashboard component with KPI cards, multi-line chart with legend, department summary cards. Professional, enterprise-grade design that isn't generic. Code should be production-ready.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create an employee directory app where HR can search and manage employee profiles. Each employee should show: name, department, job title, manager, hire date, contact info, and performance score. Include: (1) Searchable employee table with sorting by column, (2) Filter by department dropdown, (3) Click to view detailed employee profile with file attachments, (4) Ability to edit basic info. Design it like professional HR software, not generic. React + Tailwind.",
+      "expected_output": "React component with searchable table, column sorting, department filter, detailed profile modal/page, file upload section. Clean, professional HR tool design with proper spacing and colors.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Design an HR admin panel for managing employee performance KPIs. Show a table of employees with: name, department, KPI score (actual vs target), human score, final score, performance category (Alto/Medio/Bajo with color badges), manager, and action buttons. Managers can click to set KPI targets or view details. Include department filtering and export button. Make it look professional and intentional, not like a generic data table. React + Tailwind code.",
+      "expected_output": "React component with styled data table, sortable columns, color-coded performance badges, action buttons, filter dropdown, export functionality. Enterprise-grade design suitable for daily HR use.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Create a manager's team view dashboard showing their 8 direct reports with KPI metrics, individual performance scores, latest comments/notes, and any action items (PIPs, training, succession planning). Include a summary section showing team performance distribution. Make it scannable and actionable for busy managers. React + Tailwind, professional design.",
+      "expected_output": "React component with team member cards/rows showing key metrics, team summary with distribution visualization, action items section. Design should emphasize what managers need to act on (performance issues, development opportunities).",
+      "files": []
+    }
+  ]
+}

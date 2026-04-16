@@ -104,18 +104,19 @@ async function fetchSheetData(sheetName: string): Promise<AuditRecord[]> {
  * Sheet name mapping from environment variables
  */
 const SHEET_NAMES = {
-  cavernasTour: process.env.CAVERNAS_TOUR_SHEET || "Cavernas_Tour",
-  cavernasAperturaCierre: process.env.CAVERNAS_APERTURA_CIERRE_SHEET || "Cavernas_AperturaCierre",
-  salonServicio: process.env.SALON_SERVICIO_SHEET || "Salón_Servicio",
-  salonOperacion: process.env.SALON_OPERACION_SHEET || "Salón_Operación",
-  salonEncuestaCliente: process.env.SALON_ENCUESTA_CLIENTE_SHEET || "Salón_EncuestaCliente",
-  cocinaGeneral: process.env.COCINA_GENERAL_SHEET || "Cocina_General",
-  cocinaIndividual: process.env.COCINA_INDIVIDUAL_SHEET || "Cocina_Individual",
-  inventarios: process.env.INVENTARIOS_SHEET || "Inventarios",
-  cajaSorpresa: process.env.CAJA_SORPRESA_SHEET || "Caja_Sorpresa",
-  planillaHoras: process.env.PLANILLA_HORAS_SHEET || "Planilla_Horas",
-  pagoFacturas: process.env.PAGOS_FACTURAS_SHEET || "Pagos_Facturas",
-  controlProveedores: process.env.CONTROL_PROVEEDORES_SHEET || "Control_Proveedores",
+  cavernasAperturaCierre: process.env.CAVERNAS_APERTURA_CIERRE_SHEET || "Auditoría de Apertura y Cierre - Cavernas",
+  planillaHoras: process.env.PLANILLA_HORAS_SHEET || "Planilla y Horas - Auditoría",
+  salonServicio: process.env.SALON_SERVICIO_SHEET || "SALÓN - AUDITORÍA DE EXCELENCIA EN SERVICIO",
+  comprasProveedores: process.env.COMPRAS_PROVEEDORES_SHEET || "COMPRAS - AUDITORÍA DE CONTROL DE PROVEEDORES",
+  servicioClienteReservas: process.env.SERVICIO_CLIENTE_RESERVAS_SHEET || "SERVICIO AL CLIENTE - AUDITORÍA DE RESERVAS",
+  cocinaGeneral: process.env.COCINA_GENERAL_SHEET || "COCINA - AUDITORÍA GENERAL",
+  cocinaIndividual: process.env.COCINA_INDIVIDUAL_SHEET || "COCINA - AUDITORÍA INDIVIDUAL",
+  evaluacionDesempeno: process.env.EVALUACION_DESEMPENO_SHEET || "EVALUACIÓN - AUDITORÍA DE DESEMPEÑO POR ÁREA",
+  cajaSorpresa: process.env.CAJA_SORPRESA_SHEET || "ADMINISTRACIÓN - AUDITORÍA DE CAJA SORPRESA",
+  salonOperacion: process.env.SALON_OPERACION_SHEET || "SALÓN - AUDITORÍA DE OPERACIÓN",
+  operacionEventos: process.env.OPERACION_EVENTOS_SHEET || "OPERACIÓN - AUDITORÍA DE EJECUCIÓN DE EVENTOS",
+  pagoFacturas: process.env.PAGOS_FACTURAS_SHEET || "AUDITORÍA DE PAGOS Y FACTURAS",
+  inventarios: process.env.INVENTARIOS_SHEET || "Inventarios - Auditoria",
 };
 
 /**
@@ -126,18 +127,19 @@ export async function fetchAllAudits(): Promise<AuditRecord[]> {
 
   // Add area and tipo metadata based on sheet name
   const sheetConfigs = [
-    { name: SHEET_NAMES.cavernasTour, area: "Cavernas", tipo: "Tour" },
-    { name: SHEET_NAMES.cavernasAperturaCierre, area: "Cavernas", tipo: "AperturaCierre" },
-    { name: SHEET_NAMES.salonServicio, area: "Salón", tipo: "Servicio" },
-    { name: SHEET_NAMES.salonOperacion, area: "Salón", tipo: "Operación" },
-    { name: SHEET_NAMES.salonEncuestaCliente, area: "Salón", tipo: "EncuestaCliente" },
+    { name: SHEET_NAMES.cavernasAperturaCierre, area: "Cavernas", tipo: "Apertura y Cierre" },
+    { name: SHEET_NAMES.planillaHoras, area: "Administración", tipo: "Planilla y Horas" },
+    { name: SHEET_NAMES.salonServicio, area: "Salón", tipo: "Excelencia en Servicio" },
+    { name: SHEET_NAMES.comprasProveedores, area: "Compras", tipo: "Control de Proveedores" },
+    { name: SHEET_NAMES.servicioClienteReservas, area: "Servicio al Cliente", tipo: "Reservas" },
     { name: SHEET_NAMES.cocinaGeneral, area: "Cocina", tipo: "General" },
     { name: SHEET_NAMES.cocinaIndividual, area: "Cocina", tipo: "Individual" },
-    { name: SHEET_NAMES.inventarios, area: "Inventarios", tipo: "Inventario" },
+    { name: SHEET_NAMES.evaluacionDesempeno, area: "Evaluación", tipo: "Desempeño por Área" },
     { name: SHEET_NAMES.cajaSorpresa, area: "Administración", tipo: "Caja Sorpresa" },
-    { name: SHEET_NAMES.planillaHoras, area: "Administración", tipo: "Planilla" },
-    { name: SHEET_NAMES.pagoFacturas, area: "Administración", tipo: "Pagos" },
-    { name: SHEET_NAMES.controlProveedores, area: "Administración", tipo: "Proveedores" },
+    { name: SHEET_NAMES.salonOperacion, area: "Salón", tipo: "Operación" },
+    { name: SHEET_NAMES.operacionEventos, area: "Operación", tipo: "Ejecución de Eventos" },
+    { name: SHEET_NAMES.pagoFacturas, area: "Administración", tipo: "Pagos y Facturas" },
+    { name: SHEET_NAMES.inventarios, area: "Inventarios", tipo: "Inventario" },
   ];
 
   // Fetch all sheets in parallel

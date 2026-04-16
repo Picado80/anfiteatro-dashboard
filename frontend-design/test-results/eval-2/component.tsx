@@ -17,7 +17,7 @@ interface Employee {
   name: string;
   department: string;
   role: string;
-  manager: string;
+  manager: string | null;
   hireDate: string;
   email: string;
   phone: string;

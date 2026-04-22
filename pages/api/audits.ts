@@ -1,11 +1,28 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { fetchAllAudits, clearCache, getCacheStats } from "../../lib/google-sheets";
-import { scoreAudit, ScoredAudit } from "../../lib/audit-scoring";
+import { getServiceSupabase } from "../../lib/database";
+import { determineStatus } from "../../lib/metrics/calculations";
+import { ScoredAudit } from "../../lib/audit-scoring";
+
+/**
+ * Normaliza el área para compatibilidad con datos históricos en Supabase.
+ * Aplica las mismas reglas que db-sync.ts para consistencia.
+ */
+function normalizeArea(area: string, auditType: string): string {
+  const type = (auditType || "").toUpperCase();
+  if (
+    type.includes("EJECUCIÓN DE EVENTOS") ||
+    type.includes("AUDITORÍA DE RESERVAS") ||
+    type.includes("ENCUESTA DE SERVICIO") ||
+    (area || "").toUpperCase() === "OPERACIÓN"
+  ) {
+    return "Servicio al Cliente";
+  }
+  return area;
+}
 
 interface ApiResponse {
   success: boolean;
   data?: ScoredAudit[];
-  cacheStats?: any[];
   error?: string;
   timestamp?: string;
 }
@@ -27,33 +44,52 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    // Support cache clearing via ?refresh=true
-    if (req.query.refresh === "true") {
-      clearCache();
+    const supabase = getServiceSupabase();
+
+    // Fetch all audits from Supabase, ordered by date
+    const { data: records, error } = await supabase
+      .from("audits")
+      .select("*")
+      .order("timestamp", { ascending: false });
+
+    if (error) {
+      throw error;
     }
 
-    // Fetch all audit records from Google Sheets
-    const records = await fetchAllAudits();
+    // Map to ScoredAudit format expected by the frontend
+    const scoredAudits: ScoredAudit[] = (records || []).map((record) => {
+      // Normalize area (handles historical records with wrong area like 'Operación')
+      const area = normalizeArea(record.area || "", record.audit_type || "");
 
-    // Apply scoring to each record
-    const scoredAudits: ScoredAudit[] = records
-      .filter((record) => record.timestamp) // Filter out empty rows
-      .map((record) => scoreAudit(record));
+      // Re-calculate the exact state based on the raw_score and normalized area
+      const score = Number(record.raw_score || 0);
+      const { estado, color, cumplimiento } = determineStatus(score, area);
 
-    // Optional: Return cache stats for monitoring
-    const includeStats = req.query.stats === "true";
+      return {
+        timestamp: record.timestamp,
+        auditor: record.auditor || null,
+        employee_name: (record as any).employee_name || null, // Campo colaborador evaluado
+        area: area,
+        auditType: record.audit_type,
+        tipo: record.audit_type,
+        responses: record.responses || {},
+        score: Math.round(score),
+        cumplimiento,
+        estado,
+        color,
+      };
+    });
 
     res.status(200).json({
       success: true,
       data: scoredAudits,
-      ...(includeStats && { cacheStats: getCacheStats() }),
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error("API error:", error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch audit data",
+      error: error instanceof Error ? error.message : "Failed to fetch audit data from Supabase",
       timestamp: new Date().toISOString(),
     });
   }

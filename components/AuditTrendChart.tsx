@@ -80,7 +80,8 @@ export function AuditTrendChart({
             textAnchor="end"
             height={80}
           />
-          <YAxis />
+          <YAxis yAxisId="left" orientation="left" />
+          <YAxis yAxisId="right" orientation="right" domain={[0, 100]} />
           <Tooltip
             contentStyle={{
               backgroundColor: "rgba(0, 0, 0, 0.8)",
@@ -91,6 +92,7 @@ export function AuditTrendChart({
           />
           <Legend />
           <Line
+            yAxisId="left"
             type="monotone"
             dataKey="cumple"
             stroke="#10b981"
@@ -99,6 +101,7 @@ export function AuditTrendChart({
             dot={{ r: 4 }}
           />
           <Line
+            yAxisId="left"
             type="monotone"
             dataKey="alerta"
             stroke="#f59e0b"
@@ -107,6 +110,7 @@ export function AuditTrendChart({
             dot={{ r: 4 }}
           />
           <Line
+            yAxisId="left"
             type="monotone"
             dataKey="noCumple"
             stroke="#ef4444"

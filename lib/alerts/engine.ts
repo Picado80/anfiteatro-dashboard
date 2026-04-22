@@ -3,16 +3,13 @@
  * Analiza los datos de Supabase y detecta 3 tipos de condiciones de alerta.
  */
 
-import { getServiceSupabase } from "../database";
 import {
   SCORE_THRESHOLDS,
-  RED_FLAG_MONTHS,
   NEGATIVE_RESPONSE_RATE,
   AUDIT_FREQUENCIES,
   NEGATIVE_RESPONSE_VALUES,
   POSITIVE_RESPONSE_VALUES,
 } from "./config";
-
 // ─── Tipos de Alerta ─────────────────────────────────────────────────────────
 
 export interface Alert1_RedFlag {
@@ -174,8 +171,8 @@ export async function detectNegativeQuestions(): Promise<Alert2_NegativeQuestion
       // Saltar campos que no son preguntas de sí/no
       const lowerQ = question.toLowerCase();
       if (lowerQ.includes("marca temporal") || lowerQ.includes("fecha") ||
-          lowerQ.includes("auditor") || lowerQ.includes("nombre") ||
-          lowerQ.includes("colaborador") || lowerQ.includes("mesero")) {
+        lowerQ.includes("auditor") || lowerQ.includes("nombre") ||
+        lowerQ.includes("colaborador") || lowerQ.includes("mesero")) {
         continue;
       }
 

@@ -9,7 +9,7 @@ interface StatusDistributionChartProps {
 
 // Label custom renderizada DENTRO de cada slice
 const RADIAN = Math.PI / 180;
-const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, _name, value }: any)nst renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name, value }: any) => {
+const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
   if (percent < 0.05) return null; // No mostrar si es muy pequeño
   const radius = innerRadius + (outerRadius - innerRadius) * 0.55;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);

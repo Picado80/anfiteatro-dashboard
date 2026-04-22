@@ -1,9 +1,10 @@
 import { google } from "googleapis";
-import { AuditRecord } from "./audit-scoring";
+import { v4 as uuidv4 } from "uuid";
+import { RawAuditRecord, AuditResponses } from "./types/audit";
 
 // In-memory cache for audit data
 interface CacheEntry {
-  data: AuditRecord[];
+  data: RawAuditRecord[];
   timestamp: number;
 }
 
@@ -24,7 +25,6 @@ function getAuthenticatedClient() {
   const auth = new google.auth.GoogleAuth({
     credentials: {
       type: "service_account",
-      project_id: process.env.GOOGLE_PROJECT_ID,
       private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
       private_key: privateKey,
       client_email: serviceAccountEmail,
@@ -32,16 +32,40 @@ function getAuthenticatedClient() {
       auth_uri: "https://accounts.google.com/o/oauth2/auth",
       token_uri: "https://oauth2.googleapis.com/token",
       auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-    },
+    } as any,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 
   return google.sheets({ version: "v4", auth });
 }
 
 /**
+ * Helper function: Fetch with Exponential Backoff
+ */
+async function fetchWithRetry(sheets: any, sheetId: string, sheetName: string, maxRetries = 3) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      return await sheets.spreadsheets.values.get({
+        spreadsheetId: sheetId,
+        range: `${sheetName}!A1:AZ2000`, // Limit pagination 
+      });
+    } catch (err: any) {
+      if (err.code === 429 && retries < maxRetries - 1) {
+        retries++;
+        const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
+        await new Promise(res => setTimeout(res, delay));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
+
+/**
  * Fetch all rows from a specific sheet tab
  */
-async function fetchSheetData(sheetName: string): Promise<AuditRecord[]> {
+async function fetchSheetData(sheetName: string, configArea: string, configTipo: string): Promise<RawAuditRecord[]> {
   const cacheKey = `sheet_${sheetName}`;
   const now = Date.now();
 
@@ -58,11 +82,7 @@ async function fetchSheetData(sheetName: string): Promise<AuditRecord[]> {
       throw new Error("Missing GOOGLE_SHEET_ID in environment variables");
     }
 
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: sheetId,
-      range: `${sheetName}!A:Z`,
-    });
-
+    const response = await fetchWithRetry(sheets, sheetId, sheetName);
     const rows = response.data.values || [];
 
     if (rows.length === 0) {
@@ -71,20 +91,37 @@ async function fetchSheetData(sheetName: string): Promise<AuditRecord[]> {
     }
 
     // First row is headers
-    const headers = rows[0];
-    const records: AuditRecord[] = rows.slice(1).map((row) => {
-      const record: AuditRecord = {
-        timestamp: "",
-        auditor: "",
-        area: "",
-        tipo: "",
-      };
+    const headers: string[] = rows[0];
+    const records: RawAuditRecord[] = rows.slice(1).map((row: any[]) => {
+      let timestamp = "";
+      let auditor = "";
+      const responses: AuditResponses = {};
 
       headers.forEach((header: string, index: number) => {
-        record[header] = row[index] || "";
+        const val = row[index] || "";
+        const lowerHeader = header.toLowerCase();
+
+        // Normalization
+        if (lowerHeader.includes("marca temporal") || lowerHeader.includes("fecha")) {
+          if (!timestamp) timestamp = val; // Always prefer the first match
+          responses[header] = val; // Also keep it in responses for completeness
+        } else if (lowerHeader.includes("quién audita") || lowerHeader.includes("quien audita") || lowerHeader.includes("auditor") || lowerHeader.includes("líder")) {
+          if (!auditor) auditor = val;
+          responses[header] = val;
+        } else {
+          // Dynamic fields
+          responses[header] = val;
+        }
       });
 
-      return record;
+      return {
+        id: "", // Will be assigned UUID later if needed or in frontend
+        timestamp,
+        auditor,
+        area: configArea,
+        auditType: configTipo,
+        responses,
+      };
     });
 
     // Cache the results
@@ -122,8 +159,8 @@ const SHEET_NAMES = {
 /**
  * Fetch all audit data from all sheets
  */
-export async function fetchAllAudits(): Promise<AuditRecord[]> {
-  const allRecords: AuditRecord[] = [];
+export async function fetchAllAudits(): Promise<RawAuditRecord[]> {
+  const allRecords: RawAuditRecord[] = [];
 
   // Add area and tipo metadata based on sheet name
   const sheetConfigs = [
@@ -145,12 +182,8 @@ export async function fetchAllAudits(): Promise<AuditRecord[]> {
   // Fetch all sheets in parallel
   const results = await Promise.allSettled(
     sheetConfigs.map(async (config) => {
-      const data = await fetchSheetData(config.name);
-      return data.map((record) => ({
-        ...record,
-        area: record.area || config.area,
-        tipo: record.tipo || config.tipo,
-      }));
+      const data = await fetchSheetData(config.name, config.area, config.tipo);
+      return data;
     })
   );
 

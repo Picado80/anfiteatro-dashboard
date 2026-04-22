@@ -39,17 +39,16 @@ export function Layout({ children, lastRefresh }: LayoutProps) {
         </div>
 
         <div className="px-3 py-2 space-y-1">
-          <Link href="/">
-            <a
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                isActive("/")
-                  ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              }`}
-            >
-              <Home className="w-4 h-4 mr-3" />
-              Resumen General
-            </a>
+          <Link
+            href="/"
+            className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+              isActive("/")
+                ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            }`}
+          >
+            <Home className="w-4 h-4 mr-3" />
+            Resumen General
           </Link>
 
           <div className="pt-2 pb-1">
@@ -60,17 +59,17 @@ export function Layout({ children, lastRefresh }: LayoutProps) {
 
           {["Cavernas", "Salón", "Cocina", "Inventarios", "Administración"].map(
             (area) => (
-              <Link key={area} href={`/areas/${area.toLowerCase()}`}>
-                <a
-                  className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                    isActive(`/areas/${area.toLowerCase()}`)
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <BarChart3 className="w-4 h-4 mr-3" />
-                  {area}
-                </a>
+              <Link
+                key={area}
+                href={`/areas/${area.toLowerCase()}`}
+                className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive(`/areas/${area.toLowerCase()}`)
+                    ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <BarChart3 className="w-4 h-4 mr-3" />
+                {area}
               </Link>
             )
           )}
@@ -81,17 +80,16 @@ export function Layout({ children, lastRefresh }: LayoutProps) {
             </p>
           </div>
 
-          <Link href="/audits">
-            <a
-              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
-                isActive("/audits")
-                  ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              }`}
-            >
-              <BarChart3 className="w-4 h-4 mr-3" />
-              Auditorías Completadas
-            </a>
+          <Link
+            href="/audits"
+            className={`flex items-center px-3 py-2 rounded-md text-sm font-medium ${
+              isActive("/audits")
+                ? "bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100"
+                : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            }`}
+          >
+            <BarChart3 className="w-4 h-4 mr-3" />
+            Auditorías Completadas
           </Link>
         </div>
 

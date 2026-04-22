@@ -6,10 +6,13 @@ import { ErrorBanner } from "../components/ErrorBanner";
 import { ScoreCard } from "../components/ScoreCard";
 import { AuditTable } from "../components/AuditTable";
 import { StatusBadge } from "../components/StatusBadge";
+import { StatusDistributionChart } from "../components/StatusDistributionChart";
+import { AreaPerformanceChart } from "../components/AreaPerformanceChart";
+import { AuditTrendChart } from "../components/AuditTrendChart";
+import { AuditorPerformanceChart } from "../components/AuditorPerformanceChart";
 import {
   calculateAreaSummary,
   getLastNDays,
-  filterByAreaAndTipo,
 } from "../lib/audit-utils";
 import { RefreshCw } from "lucide-react";
 
@@ -120,6 +123,21 @@ export default function Home() {
             <p className="text-3xl font-bold text-red-600 mt-2">
               {audits.filter((a) => a.estado === "No cumple").length}
             </p>
+          </div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="space-y-6">
+          {/* Status Distribution - Full Width */}
+          <StatusDistributionChart audits={audits} />
+
+          {/* Trends Chart - Full Width */}
+          <AuditTrendChart audits={audits} days={30} />
+
+          {/* Side by Side Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <AreaPerformanceChart audits={audits} />
+            <AuditorPerformanceChart audits={audits} limit={10} />
           </div>
         </div>
 

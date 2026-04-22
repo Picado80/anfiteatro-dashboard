@@ -8,7 +8,7 @@ import { AuditTable } from "../components/AuditTable";
 import { getAreas, getAuditors } from "../lib/audit-utils";
 
 export default function AuditsPage() {
-  const { audits, loading, error, lastRefresh, refresh } = useAudits();
+  const { audits, loading, error, lastRefresh } = useAudits();
   const [dismissedError, setDismissedError] = useState(false);
   const [filters, setFilters] = useState({
     search: "",

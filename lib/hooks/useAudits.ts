@@ -5,7 +5,7 @@ interface UseAuditsResult {
   audits: ScoredAudit[];
   loading: boolean;
   error: string | null;
-  lastRefresh: Date | null;
+  lastRefresh?: Date;
   refresh: () => Promise<void>;
 }
 
@@ -13,7 +13,7 @@ export function useAudits(refreshInterval: number = 15 * 60 * 1000): UseAuditsRe
   const [audits, setAudits] = useState<ScoredAudit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<Date | undefined>(undefined);
 
   const fetchAudits = async () => {
     try {

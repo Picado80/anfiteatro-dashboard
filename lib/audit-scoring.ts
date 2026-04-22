@@ -1,18 +1,17 @@
 // Audit scoring logic based on PLAN_DASHBOARD_LOOKER_STUDIO specifications
 
-export interface AuditRecord {
-  timestamp: string;
-  auditor: string;
-  area: string;
-  tipo: string;
-  [key: string]: any;
-}
+// NOTE: This module is marked for DEPRECATION.
+// Scoring logic has been moved to lib/metrics/calculations.ts to properly handle
+// variable dynamic configurations as identified in ETAPA 1.2
+import { calculateComplianceScore, determineStatus } from "./metrics/calculations";
+import { RawAuditRecord, NormalizedAudit } from "./types/audit";
 
-export interface ScoredAudit extends AuditRecord {
-  score: number;
-  cumplimiento: string;
-  estado: "Cumple" | "No cumple" | "Alerta";
-  color: "green" | "yellow" | "red";
+// We now bridge to NormalizedAudit to keep backward compatibility
+export interface AuditRecord extends RawAuditRecord {}
+
+export interface ScoredAudit extends NormalizedAudit {
+  // Aliases for compatibility
+  tipo?: string; 
 }
 
 // Score thresholds by area
@@ -97,7 +96,7 @@ function scoreSalonAudit(record: AuditRecord): number {
  */
 function scoreCocinaAudit(record: AuditRecord): number {
   const yesNoFields = Object.entries(record)
-    .filter(([key, value]) => key !== "timestamp" && key !== "auditor")
+    .filter(([key]) => key !== "timestamp" && key !== "auditor")
     .map(([_, value]) => (value === "Sí" || value === "Sí." ? 1 : value === "No" ? 0 : null))
     .filter((val) => val !== null);
 
@@ -140,49 +139,23 @@ function scoreAdministracionAudit(record: AuditRecord): number {
 }
 
 /**
- * Main scoring function - routes to appropriate scorer
+ * Main scoring function - routes to dynamic scorer in calculations.ts
+ * @deprecated Use lib/metrics/calculations.ts directly for new components
  */
 export function scoreAudit(record: AuditRecord): ScoredAudit {
-  const area = record.area?.toLowerCase() || "";
-  const tipo = record.tipo?.toLowerCase() || "";
+  const area = record.area || "";
+  const auditType = record.auditType || "";
 
-  let score = 0;
-
-  if (area.includes("caverna")) {
-    score = scoreCarverasAudit(record);
-  } else if (area.includes("salón") || area.includes("salon")) {
-    score = scoreSalonAudit(record);
-  } else if (area.includes("cocina")) {
-    score = scoreCocinaAudit(record);
-  } else if (area.includes("inventario")) {
-    score = scoreInventariosAudit(record);
-  } else if (area.includes("admin")) {
-    score = scoreAdministracionAudit(record);
-  }
-
-  // Determine status based on thresholds
-  const areaThreshold = THRESHOLDS[area as keyof typeof THRESHOLDS] || THRESHOLDS.administracion;
-
-  let estado: "Cumple" | "No cumple" | "Alerta" = "No cumple";
-  let color: "green" | "yellow" | "red" = "red";
-  let cumplimiento = "No";
-
-  if (score >= areaThreshold.meta) {
-    estado = "Cumple";
-    color = "green";
-    cumplimiento = "Sí";
-  } else if (score >= areaThreshold.alerta) {
-    estado = "Alerta";
-    color = "yellow";
-    cumplimiento = "Parcial";
-  }
+  const score = calculateComplianceScore(record.responses || {}, auditType);
+  const { estado, color, cumplimiento } = determineStatus(score, area);
 
   return {
     ...record,
+    tipo: auditType, // Add back for compatibility with older frontend components
     score: Math.round(score),
     cumplimiento,
-    estado,
-    color,
+    estado: estado,
+    color: color,
   };
 }
 

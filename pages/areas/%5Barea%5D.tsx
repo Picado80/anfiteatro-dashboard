@@ -5,7 +5,6 @@ import { useAudits } from "../../lib/hooks/useAudits";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ErrorBanner } from "../../components/ErrorBanner";
 import { AuditTable } from "../../components/AuditTable";
-import { StatusBadge } from "../../components/StatusBadge";
 import {
   filterByAreaAndTipo,
   calculateAreaSummary,
@@ -14,8 +13,6 @@ import {
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,

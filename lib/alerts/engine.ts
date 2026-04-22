@@ -1,8 +1,9 @@
 /**
+ /**
  * MOTOR DE DETECCIÓN DE ALERTAS
  * Analiza los datos de Supabase y detecta 3 tipos de condiciones de alerta.
  */
-
+import { getServiceSupabase } from "../database";
 import {
   SCORE_THRESHOLDS,
   NEGATIVE_RESPONSE_RATE,

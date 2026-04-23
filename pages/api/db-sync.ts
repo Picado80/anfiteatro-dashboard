@@ -168,7 +168,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .from("audits")
       .upsert(
         auditsToUpsert as any, 
-        { onConflict: 'timestamp', ignoreDuplicates: true }
+       { onConflict: 'timestamp,auditor,area,audit_type', ignoreDuplicates: true }
       );
 
     if (error) {

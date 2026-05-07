@@ -48,7 +48,7 @@ async function fetchWithRetry(sheets: any, sheetId: string, sheetName: string, m
     try {
       return await sheets.spreadsheets.values.get({
         spreadsheetId: sheetId,
-        range: `${sheetName}!A1:AZ2000`, // Limit pagination 
+        range: `'${sheetName}'!A1:AZ2000`, // Protect spaces with single quotes
       });
     } catch (err: any) {
       if (err.code === 429 && retries < maxRetries - 1) {
@@ -142,7 +142,7 @@ async function fetchSheetData(sheetName: string, configArea: string, configTipo:
  */
 const SHEET_NAMES = {
   cavernasAperturaCierre: process.env.CAVERNAS_APERTURA_CIERRE_SHEET || "Auditoría de Apertura y Cierre - Cavernas",
-  cavernasTours: process.env.CAVERNAS_TOURS_SHEET || "Cavernas- Auditoría de Tour",
+  cavernasTours: process.env.CAVERNAS_TOURS_SHEET || "Auditoría de Tours - Cavernas",
   planillaHoras: process.env.PLANILLA_HORAS_SHEET || "Planilla y Horas - Auditoría",
   salonServicio: process.env.SALON_SERVICIO_SHEET || "SALÓN - AUDITORÍA DE EXCELENCIA EN SERVICIO",
   comprasProveedores: process.env.COMPRAS_PROVEEDORES_SHEET || "COMPRAS - AUDITORÍA DE CONTROL DE PROVEEDORES",

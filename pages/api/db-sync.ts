@@ -176,12 +176,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Solución simplificada para Fase 1: Limpiar y re-insertar o insertar con ON CONFLICT
     // IMPORTANTE: Requiere ejecutar ALTER TABLE audits ADD CONSTRAINT unique_audit UNIQUE(timestamp, auditor, area, audit_type);
     
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("audits")
-      .upsert(
-        auditsToUpsert as any, 
-       { onConflict: 'timestamp,auditor,area,audit_type', ignoreDuplicates: true }
-      );
+      .insert(auditsToUpsert as any);
 
     if (error) {
       console.error("Supabase insert error:", error);

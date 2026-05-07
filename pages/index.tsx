@@ -5,9 +5,8 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirigir al Dashboard Macro (WENDY) por defecto
-    // En la Fase 4, esto se reemplazará por una verificación de login/roles
-    router.replace("/dashboard/macro");
+    // Redirigir al inicio de sesión (Login)
+    router.replace("/login");
   }, [router]);
 
   return (

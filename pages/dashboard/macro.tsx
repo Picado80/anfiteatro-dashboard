@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { Layout } from "../../components/Layout";
 import { useAudits } from "../../lib/hooks/useAudits";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
@@ -26,6 +27,9 @@ const PREDEFINED_AREAS = [
 ];
 
 export default function MacroDashboard() {
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
   const { audits, loading, error, lastRefresh, refresh } = useAudits();
   const [dismissedError, setDismissedError] = useState(false);
   const [filters, setFilters] = useState({
@@ -35,6 +39,20 @@ export default function MacroDashboard() {
     startDate: "",
     endDate: "",
   });
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("currentUser");
+    if (!userStr) {
+      router.replace("/login");
+    } else {
+      const user = JSON.parse(userStr);
+      setCurrentUser(user);
+      if (user.role === "supervisor") {
+        setFilters(f => ({ ...f, area: user.area }));
+      }
+    }
+  }, [router]);
+
   const [alertStatus, setAlertStatus] = useState<"idle" | "confirming" | "loading" | "done" | "error">("idle");
   const [alertResult, setAlertResult] = useState<{ totalAlerts: number } | null>(null);
 
@@ -64,11 +82,20 @@ export default function MacroDashboard() {
 
   const cancelAlert = () => setAlertStatus("idle");
 
-  const availableAreas = useMemo(() => getAreas(audits), [audits]);
+  const availableAreas = useMemo(() => {
+    const all = getAreas(audits);
+    if (currentUser?.role === "supervisor") {
+      return all.filter(a => a === currentUser.area);
+    }
+    return all;
+  }, [audits, currentUser]);
   const auditors = useMemo(() => getAuditors(audits), [audits]);
 
   const filteredAudits = useMemo(() => {
     return audits.filter((audit) => {
+      // Role enforcement: Supervisor can NEVER see other areas
+      if (currentUser?.role === "supervisor" && audit.area !== currentUser.area) return false;
+
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
@@ -121,7 +148,7 @@ export default function MacroDashboard() {
               Dashboard Operacional
             </h1>
             <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
-              Visión integral de cumplimiento y calidad
+              Visión integral de cumplimiento y calidad | <span className="font-bold text-brand-600 dark:text-brand-400">Hola, {currentUser?.name}</span>
             </p>
           </div>
           <div className="mt-4 md:mt-0 flex items-center gap-3">
@@ -181,6 +208,13 @@ export default function MacroDashboard() {
             >
               <RefreshCw className="w-5 h-5" />
               Sincronizar
+            </button>
+            {/* Botón Salir */}
+            <button
+              onClick={() => { localStorage.removeItem("currentUser"); router.replace("/login"); }}
+              className="inline-flex items-center px-4 py-2.5 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-all duration-200 gap-2 text-sm"
+            >
+              Salir
             </button>
           </div>
         </div>
@@ -243,7 +277,7 @@ export default function MacroDashboard() {
             Desempeño por Área
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {PREDEFINED_AREAS.map((area) => {
+            {PREDEFINED_AREAS.filter(area => currentUser?.role === "admin" || currentUser?.area === area).map((area) => {
               const isVentas = area === "Ventas";
               // Normalize area string to match with the mapped values in /api/audits
               // Ensure we check for the exact map keys, sometimes they have accents.

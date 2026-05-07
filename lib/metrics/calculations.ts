@@ -1,4 +1,5 @@
 import { AuditResponses, ScoredStatus, ScoredColor, ScoredCompliance } from "../types/audit";
+import { NORMALIZED_SCORABLE, normalizeString } from "./scorable-questions";
 
 // Thresholds for the areas (can be expanded later)
 export const THRESHOLDS = {
@@ -26,21 +27,11 @@ export function calculateComplianceScore(responses: AuditResponses, auditType: s
   let scorableFields = 0;
 
   for (const [key, rawValue] of Object.entries(responses)) {
-    // Ignore internal or known text-only fields
-    const lowerKey = key.toLowerCase();
-    if (
-      lowerKey.includes("marca temporal") ||
-      lowerKey.includes("observacion") ||
-      lowerKey.includes("observación") ||
-      lowerKey.includes("detalle") ||
-      lowerKey.includes("problema") ||
-      lowerKey.includes("audita") ||
-      lowerKey.includes("fecha") ||
-      lowerKey.includes("proveedor") ||
-      lowerKey.includes("nombre") ||
-      lowerKey.includes("semana") ||
-      lowerKey.includes("área")
-    ) {
+    // Solo contar las preguntas que estén en la lista blanca de la Configuración del Excel
+    const normalizedKey = normalizeString(key);
+    
+    // Si la pregunta NO está en la lista blanca, la ignoramos completamente
+    if (!NORMALIZED_SCORABLE.has(normalizedKey)) {
       continue;
     }
 

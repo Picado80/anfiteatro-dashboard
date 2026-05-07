@@ -161,7 +161,16 @@ export const SCORABLE_QUESTIONS = [
   "¿Baños limpios?",
   "¿Estan todas las Luces apagadas?",
   "¿Portones Cerrados correctamente?",
-  "¿Área Lista y segura?"
+  "¿Área Lista y segura?",
+
+  // CAVERNAS - AUDITORÍA DE TOUR (Añadido nuevo)
+  "¿El guía saludó cordialmente a los clientes al inicio?",
+  "¿Explicó medidas de seguridad de forma clara?",
+  "¿Demuestra conocimiento técnico de las cavernas?",
+  "¿Ritmo apropiado durante recorrido (no rápido, no lento)?",
+  "¿Respondió preguntas de clientes de forma adecuada?",
+  "¿Ambiente fue seguro durante todo el tour?",
+  "¿Cierre fue profesional y dejó buena impresión?",
 ];
 
 export function normalizeString(str: string): string {

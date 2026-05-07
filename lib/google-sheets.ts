@@ -142,6 +142,7 @@ async function fetchSheetData(sheetName: string, configArea: string, configTipo:
  */
 const SHEET_NAMES = {
   cavernasAperturaCierre: process.env.CAVERNAS_APERTURA_CIERRE_SHEET || "Auditoría de Apertura y Cierre - Cavernas",
+  cavernasTours: process.env.CAVERNAS_TOURS_SHEET || "Cavernas- Auditoría de Tour",
   planillaHoras: process.env.PLANILLA_HORAS_SHEET || "Planilla y Horas - Auditoría",
   salonServicio: process.env.SALON_SERVICIO_SHEET || "SALÓN - AUDITORÍA DE EXCELENCIA EN SERVICIO",
   comprasProveedores: process.env.COMPRAS_PROVEEDORES_SHEET || "COMPRAS - AUDITORÍA DE CONTROL DE PROVEEDORES",
@@ -165,6 +166,7 @@ export async function fetchAllAudits(): Promise<RawAuditRecord[]> {
   // Add area and tipo metadata based on sheet name
   const sheetConfigs = [
     { name: SHEET_NAMES.cavernasAperturaCierre, area: "Cavernas", tipo: "Apertura y Cierre" },
+    { name: SHEET_NAMES.cavernasTours, area: "Cavernas", tipo: "Guías de Tour" },
     { name: SHEET_NAMES.planillaHoras, area: "Administración", tipo: "Planilla y Horas" },
     { name: SHEET_NAMES.salonServicio, area: "Salón", tipo: "Excelencia en Servicio" },
     { name: SHEET_NAMES.comprasProveedores, area: "Compras", tipo: "Control de Proveedores" },

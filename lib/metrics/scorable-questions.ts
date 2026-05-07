@@ -128,6 +128,17 @@ export const SCORABLE_QUESTIONS = [
   "¿Se establecieron acciones correctivas?",
   "¿Desempeño del equipo del lider?",
 
+  // INVENTARIOS
+  "¿Inventario físico coincide con sistema?",
+  "¿Diferencias encontradas?",
+  "¿Precisión general del inventario?",
+  "¿Diferencias investigadas y resueltas?",
+  "¿Rotación PEPS (primero entra, primero sale) seguida?",
+  "¿Productos vencidos identificados?",
+  "¿Refrigeración a temperatura correcta?",
+  "¿Almacenamiento seco en condiciones óptimas?",
+  "¿Organización clara por categoría?",
+
   // COMPRAS
   "¿Entregas a tiempo?",
   "¿Calidad de productos entregados?",

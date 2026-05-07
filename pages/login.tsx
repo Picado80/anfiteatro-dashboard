@@ -6,11 +6,11 @@ import Head from "next/head";
 const USERS = [
   { name: "Wendy", role: "admin", area: "Todas", pin: "1234" },
   { name: "Benito", role: "admin", area: "Todas", pin: "1234" },
-  { name: "Líder Salón", role: "supervisor", area: "Salón", pin: "1111" },
-  { name: "Líder Cocina", role: "supervisor", area: "Cocina", pin: "2222" },
-  { name: "Líder Cavernas", role: "supervisor", area: "Cavernas", pin: "3333" },
-  { name: "Líder Administración", role: "supervisor", area: "Administración", pin: "4444" },
-  { name: "Líder Inventarios", role: "supervisor", area: "Inventarios", pin: "5555" },
+  { name: "Líder Salón", role: "supervisor", area: "Salón", pin: "8362" },
+  { name: "Líder Cocina", role: "supervisor", area: "Cocina", pin: "5174" },
+  { name: "Líder Cavernas", role: "supervisor", area: "Cavernas", pin: "9428" },
+  { name: "Líder Administración", role: "supervisor", area: "Administración", pin: "3751" },
+  { name: "Líder Inventarios", role: "supervisor", area: "Inventarios", pin: "6093" },
 ];
 
 export default function Login() {

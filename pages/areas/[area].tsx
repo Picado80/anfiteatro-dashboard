@@ -56,6 +56,18 @@ export default function AreaDetailPage() {
     return AREA_SLUG_MAP[slug.toLowerCase()] || slug;
   }, [areaSlug]);
 
+  React.useEffect(() => {
+    const userStr = localStorage.getItem("currentUser");
+    if (!userStr) {
+      router.replace("/login");
+      return;
+    }
+    const user = JSON.parse(userStr);
+    if (user.role === "supervisor" && areaName && user.area.toLowerCase() !== areaName.toLowerCase()) {
+      router.replace("/dashboard/macro");
+    }
+  }, [router, areaName]);
+
   // Auditorías de esta área
   const areaAudits = useMemo(() => {
     if (!areaName) return [];

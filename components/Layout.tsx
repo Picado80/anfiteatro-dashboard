@@ -20,6 +20,14 @@ const AREA_ICONS: Record<string, React.ReactNode> = {
 
 export function Layout({ children, lastRefresh }: LayoutProps) {
   const router = useRouter();
+  const [currentUser, setCurrentUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem("currentUser");
+    if (userStr) {
+      setCurrentUser(JSON.parse(userStr));
+    }
+  }, []);
 
   const isActive = (path: string) => router.pathname === path;
 
@@ -73,7 +81,9 @@ export function Layout({ children, lastRefresh }: LayoutProps) {
             </p>
           </div>
 
-          {["Cavernas", "Salón", "Cocina", "Inventarios", "Administración", "Servicio al Cliente", "Ventas"].map((area) => {
+          {["Cavernas", "Salón", "Cocina", "Inventarios", "Administración", "Servicio al Cliente", "Ventas"]
+            .filter(area => !currentUser || currentUser.role === "admin" || currentUser.area === area)
+            .map((area) => {
             const isVentas = area === "Ventas";
             const path = `/areas/${area.toLowerCase()}`;
             const active = isActive(path);

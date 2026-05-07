@@ -121,14 +121,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let parsedTimestamp = new Date().toISOString();
       try {
         if (record.timestamp) {
-           // Asume que la fecha de Google Sheets puede ser parseada
-           const d = new Date(record.timestamp);
+           let dateStr = record.timestamp;
+           if (dateStr.includes("/")) {
+             const parts = dateStr.split(" ");
+             const dateParts = parts[0].split("/");
+             if (dateParts.length === 3) {
+               dateStr = `${dateParts[1]}/${dateParts[0]}/${dateParts[2]}`;
+               if (parts[1]) dateStr += ` ${parts[1]}`;
+               if (parts[2]) dateStr += ` ${parts[2]}`;
+             }
+           }
+           const d = new Date(dateStr);
            if (!isNaN(d.getTime())) {
                parsedTimestamp = d.toISOString();
+           } else {
+               parsedTimestamp = new Date(Date.now() + Math.random() * 10000).toISOString();
            }
         }
       } catch(e) {
           console.warn("Invalid timestamp parsing for:", record.timestamp);
+          parsedTimestamp = new Date(Date.now() + Math.random() * 10000).toISOString();
       }
 
       const normalizedArea = normalizeArea(record.area, record.auditType || "");
